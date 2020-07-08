@@ -30,7 +30,7 @@ namespace IotBackEnd
             if (result.Count != 0)
             {
                 string top = req.Query["top"];
-                if (String.IsNullOrWhiteSpace(top))
+                if (!String.IsNullOrWhiteSpace(top))
                 {
                     int topint = Int32.Parse(top);
                     return new OkObjectResult(allItems.Take(topint));

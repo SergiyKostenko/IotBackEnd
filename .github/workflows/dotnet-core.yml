@@ -32,3 +32,4 @@ jobs:
       uses: Azure/functions-action@v1.1.4
       with:
         app-name: "MyAmazingIoTBackEnd"
+        publish-profile: ${{ secrets.SCM_CREDENTIALS }}

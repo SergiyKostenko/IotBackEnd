@@ -33,10 +33,10 @@ namespace IotBackEnd
                 if (!String.IsNullOrWhiteSpace(top))
                 {
                     int topint = Int32.Parse(top);
-                    return new OkObjectResult(allItems.Take(topint));
+                    return new OkObjectResult(result.Take(topint));
                 }
                 else
-                    return new OkObjectResult(allItems);
+                    return new OkObjectResult(result);
             }
                
             else return new BadRequestResult();

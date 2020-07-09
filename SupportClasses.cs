@@ -9,7 +9,7 @@ namespace IotBackEnd
 
     public class MyTableEntity : TableEntity
     {
-        public int humidity { get; set; }
+        public Int64 humidity { get; set; }
         public double temperature { get; set; }
         public bool isFlameDetected { get; set; }
     }

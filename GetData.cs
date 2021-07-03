@@ -24,8 +24,8 @@ namespace IotBackEnd
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            CloudTable table = StaticHelpers.GetTable();
-            List<MyTableEntity> allItems = await StaticHelpers.GetAltableItemAsync(table);
+            CloudTable table = StaticHelpers.GetTable("IotTable");
+            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table);
             List<ResponseItem> result = ProcessItems(allItems);
             if (result.Count != 0)
             {
@@ -51,6 +51,7 @@ namespace IotBackEnd
                 i.RowKey = newvar;
 
                 });
+
             List<string> DateRanges = allItems.Select(i => i.RowKey).Distinct().ToList();
             List<ResponseItem> result = new List<ResponseItem>();
             foreach (string item in DateRanges)

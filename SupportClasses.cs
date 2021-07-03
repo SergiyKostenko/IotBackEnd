@@ -12,6 +12,9 @@ namespace IotBackEnd
         public Int64 humidity { get; set; }
         public double temperature { get; set; }
         public bool isFlameDetected { get; set; }
+        public double pressure { get; set; }
+        public double voc { get; set; }
+        public int AQI { get; internal set; }
     }
 
     public class ResponseItem

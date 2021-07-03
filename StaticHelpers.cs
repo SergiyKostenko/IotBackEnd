@@ -11,16 +11,16 @@ namespace IotBackEnd
 {
    static class StaticHelpers
     {
-        public static CloudTable GetTable()
+        public static CloudTable GetTable(string tableName)
         {
             string connectionString = Environment.GetEnvironmentVariable("StorageConnection");
             var storageAccount = CloudStorageAccount.Parse(connectionString);
             var cloudTableClient = storageAccount.CreateCloudTableClient();
-            CloudTable mytable = cloudTableClient.GetTableReference("IotTable");
+            CloudTable mytable = cloudTableClient.GetTableReference(tableName);
             return mytable;
         }
 
-        public static async Task<List<MyTableEntity>> GetAltableItemAsync(CloudTable table)
+        public static async Task<List<MyTableEntity>> GetAlltableItemAsync(CloudTable table)
         {
             TableQuery<MyTableEntity> query = new TableQuery<MyTableEntity>()
   .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "raspberry01"));

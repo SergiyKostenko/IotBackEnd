@@ -45,7 +45,8 @@ namespace IotBackEnd
         private static List<ResponseItem> ProcessItems(List<MyTableEntity> allItems)
         {
             allItems.ForEach(i => {
-                var date = DateTime.Parse(i.RowKey);
+               
+                var date = i.Timestamp;
                 string newvar = $"{date.Year}-{date.Month}-{date.Day}T{date.Hour}:00:00";
                 i.RowKey = newvar;
 

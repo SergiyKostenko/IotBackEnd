@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "ConnectionStrings__AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=myamazingiotstorage;AccountKey=pvesKzx56bj1NfPR84G/WK8TT61eU9Y4kWSNbAhAQd0z7XSzthONOyqKOX6/xQ2iyC33uVwBVkx2ioXVe8vW8g==;BlobEndpoint=https://myamazingiotstorage.blob.core.windows.net/;TableEndpoint=https://myamazingiotstorage.table.core.windows.net/;QueueEndpoint=https://myamazingiotstorage.queue.core.windows.net/;FileEndpoint=https://myamazingiotstorage.file.core.windows.net/",
+    "StorageConnection": "DefaultEndpointsProtocol=https;AccountName=myamazingiotstorage;AccountKey=pvesKzx56bj1NfPR84G/WK8TT61eU9Y4kWSNbAhAQd0z7XSzthONOyqKOX6/xQ2iyC33uVwBVkx2ioXVe8vW8g==;EndpointSuffix=core.windows.net"
+  }
+}

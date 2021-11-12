@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -12,22 +13,38 @@ namespace IotBackEnd
     public static class GenerateReports
     {
         [FunctionName("GenerateReports")]
-        public static async System.Threading.Tasks.Task RunAsync([TimerTrigger("0 0 10 * * *",RunOnStartup =true)]TimerInfo myTimer, ILogger log)
+        public static async System.Threading.Tasks.Task RunAsync([TimerTrigger("0 0 10 * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             CloudTable table = StaticHelpers.GetTable("IotTable");
-            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table);
+            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table, "raspberry01");
             List<ResponseItem> result = ProcessItems(allItems);
+            await UpsertToTableAsync(result);
+        }
+
+        private static async Task UpsertToTableAsync(List<ResponseItem> allItems)
+        {
+  
+            CloudTable table = StaticHelpers.GetTable("IotTableHourly");
+            //TableBatchOperation batchOperation = new TableBatchOperation();
+            //allItems.ForEach(i => batchOperation.Add(TableOperation.InsertOrReplace(i)));
+            //await table.ExecuteBatchAsync(batchOperation);
+            foreach (var item in allItems)
+            {
+                await table.ExecuteAsync(TableOperation.InsertOrReplace(item));
+            }
+
         }
 
         private static List<ResponseItem> ProcessItems(List<MyTableEntity> allItems)
         {
-            allItems.ForEach(i => {
+            allItems.ForEach(i =>
+            {
 
-                var date = i.Timestamp;
-                string newvar = $"{date.Year}-{date.Month}-{date.Day}T{date.Hour}:00:00";
-                i.RowKey = newvar;
+                var date = i.Timestamp.DateTime;
+                var newDate = new DateTime(year:date.Year,month:date.Month,day:date.Day,hour: date.Hour,0,0);
+                i.RowKey = newDate.ToString("dd/MM/yyyy HH:mm:ss");
 
             });
 
@@ -38,13 +55,12 @@ namespace IotBackEnd
                 List<MyTableEntity> range = allItems.Where(i => i.RowKey == item).ToList();
                 ResponseItem entity = new ResponseItem
                 {
-                    DeviceName = range.FirstOrDefault().PartitionKey,
+                    RowKey = item,
+                    PartitionKey= DateTime.Now.ToString("MMMM"),
                     Date = item,
                     humidity = (int)Math.Round(range.Average(i => i.humidity), 0),
                     temperature = (int)Math.Round(range.Average(i => i.temperature), 0),
-                    isFlameDetected = range.Any(i => i.isFlameDetected),
-                    
-                    
+                    AQI= (int)Math.Round(range.Average(i => i.AQI), 0)
                 };
                 result.Add(entity);
             }

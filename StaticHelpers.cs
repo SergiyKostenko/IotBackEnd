@@ -20,10 +20,10 @@ namespace IotBackEnd
             return mytable;
         }
 
-        public static async Task<List<MyTableEntity>> GetAlltableItemAsync(CloudTable table)
+        public static async Task<List<MyTableEntity>> GetAlltableItemAsync(CloudTable table,string PartitionKey)
         {
             TableQuery<MyTableEntity> query = new TableQuery<MyTableEntity>()
-  .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "raspberry01"));
+  .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
             TableContinuationToken continuationToken = null;
 
             List<MyTableEntity> allRecords = new List<MyTableEntity>();

@@ -24,50 +24,25 @@ namespace IotBackEnd
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            CloudTable table = StaticHelpers.GetTable("IotTable");
-            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table);
-            List<ResponseItem> result = ProcessItems(allItems);
-            if (result.Count != 0)
+            CloudTable table = StaticHelpers.GetTable("IotTableHourly");
+            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table, DateTime.Now.ToString("MMMM"));
+
+
+           var  filteredItems= 
+             allItems.Where(i=> DateTime.Parse(i.RowKey)>=DateTime.Now.AddDays(-7)).ToList();
+
+            if (filteredItems.Count != 0)
             {
                 string top = req.Query["top"];
                 if (!String.IsNullOrWhiteSpace(top))
                 {
                     int topint = Int32.Parse(top);
-                    return new OkObjectResult(result.Take(topint));
+                    return new OkObjectResult(allItems.Take(topint));
                 }
                 else
-                    return new OkObjectResult(result);
+                    return new OkObjectResult(allItems);
             }
-               
             else return new BadRequestResult();
-        }
-
-        private static List<ResponseItem> ProcessItems(List<MyTableEntity> allItems)
-        {
-            allItems.ForEach(i => {
-               
-                var date = i.Timestamp;
-                string newvar = $"{date.Year}-{date.Month}-{date.Day}T{date.Hour}:00:00";
-                i.RowKey = newvar;
-
-                });
-
-            List<string> DateRanges = allItems.Select(i => i.RowKey).Distinct().ToList();
-            List<ResponseItem> result = new List<ResponseItem>();
-            foreach (string item in DateRanges)
-            {
-                List<MyTableEntity> range = allItems.Where(i => i.RowKey == item).ToList();
-                ResponseItem entity = new ResponseItem
-                {
-                    DeviceName = range.FirstOrDefault().PartitionKey,
-                    Date = item,
-                    humidity = (int)Math.Round( range.Average(i => i.humidity),0),
-                    temperature = (int)Math.Round(range.Average(i => i.temperature), 0),
-                    isFlameDetected=range.Any(i=>i.isFlameDetected)
-                };
-                result.Add(entity);
-            }
-            return result;
         }
     }
 }

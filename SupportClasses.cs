@@ -11,19 +11,15 @@ namespace IotBackEnd
     {
         public double humidity { get; set; }
         public double temperature { get; set; }
-        public bool isFlameDetected { get; set; }
         public double pressure { get; set; }
-        public double voc { get; set; }
-        public int AQI { get; internal set; }
+        public int AQI { get; set; }
     }
 
-    public class ResponseItem
+    public class ResponseItem : TableEntity
     {
         public int humidity { get; set; }
         public double temperature { get; set; }
-        public bool isFlameDetected { get; set; }
-        public string DeviceName { get; set; }
         public string Date { get; set; }
-
+        public int AQI { get;  set; }
     }
 }

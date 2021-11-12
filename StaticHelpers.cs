@@ -36,5 +36,22 @@ namespace IotBackEnd
             while (continuationToken != null);
             return allRecords;
         }
+
+        public static async Task<List<ResponseItem>> GetAlltableItemAsyncResponseItem(CloudTable table, string PartitionKey)
+        {
+            TableQuery<ResponseItem> query = new TableQuery<ResponseItem>()
+  .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
+            TableContinuationToken continuationToken = null;
+
+            List<ResponseItem> allRecords = new List<ResponseItem>();
+            do
+            {
+                var batch = await table.ExecuteQuerySegmentedAsync(query, continuationToken);
+                continuationToken = batch.ContinuationToken;
+                allRecords.AddRange(batch.Results);
+            }
+            while (continuationToken != null);
+            return allRecords;
+        }
     }
 }

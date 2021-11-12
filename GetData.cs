@@ -26,7 +26,7 @@ namespace IotBackEnd
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
             CloudTable table = StaticHelpers.GetTable("IotTableHourly");
-            List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table, DateTime.Now.ToString("MMMM"));
+            List<ResponseItem> allItems = await StaticHelpers.GetAlltableItemAsyncResponseItem(table, DateTime.Now.ToString("MMMM"));
 
 
            var  filteredItems= 

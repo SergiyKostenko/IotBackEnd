@@ -13,6 +13,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.Globalization;
 
 namespace IotBackEnd
 {
@@ -29,7 +30,9 @@ namespace IotBackEnd
 
 
            var  filteredItems= 
-             allItems.Where(i=> DateTime.Parse(i.RowKey)>=DateTime.Now.AddDays(-7)).ToList();
+             allItems
+             .Where(i=> DateTime.ParseExact(i.RowKey, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) >= DateTime.Now.AddDays(-7))
+             .ToList();
 
             if (filteredItems.Count != 0)
             {

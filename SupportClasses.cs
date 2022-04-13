@@ -13,13 +13,14 @@ namespace IotBackEnd
         public double temperature { get; set; }
         public double pressure { get; set; }
         public int AQI { get; set; }
+        public string DateString { get; set; }
+
     }
 
     public class ResponseItem : TableEntity
     {
         public int humidity { get; set; }
         public double temperature { get; set; }
-        public string Date { get; set; }
         public int AQI { get;  set; }
     }
 }

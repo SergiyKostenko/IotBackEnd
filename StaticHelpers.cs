@@ -9,18 +9,27 @@ using System.Threading.Tasks;
 
 namespace IotBackEnd
 {
-   static class StaticHelpers
+    static class StaticHelpers
     {
+        public static CloudTableClient cloudTableClient { get; private set; }
+
+        static StaticHelpers()
+        {
+            string connectionString = Environment.GetEnvironmentVariable("StorageConnection");
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
+            cloudTableClient = storageAccount.CreateCloudTableClient();
+        }
+
         public static CloudTable GetTable(string tableName)
         {
             string connectionString = Environment.GetEnvironmentVariable("StorageConnection");
             var storageAccount = CloudStorageAccount.Parse(connectionString);
-            var cloudTableClient = storageAccount.CreateCloudTableClient();
+            cloudTableClient = storageAccount.CreateCloudTableClient();
             CloudTable mytable = cloudTableClient.GetTableReference(tableName);
             return mytable;
         }
 
-        public static async Task<List<MyTableEntity>> GetAlltableItemAsync(CloudTable table,string PartitionKey)
+        public static async Task<List<MyTableEntity>> GetAlltableItemAsync(CloudTable table, string PartitionKey)
         {
             TableQuery<MyTableEntity> query = new TableQuery<MyTableEntity>()
   .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
@@ -33,7 +42,8 @@ namespace IotBackEnd
                 continuationToken = batch.ContinuationToken;
                 allRecords.AddRange(batch.Results);
             }
-            while (continuationToken != null);
+           // while (continuationToken != null);
+            while (allRecords.Count < 500000) ;
             return allRecords;
         }
 

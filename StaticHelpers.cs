@@ -42,12 +42,11 @@ namespace IotBackEnd
                 continuationToken = batch.ContinuationToken;
                 allRecords.AddRange(batch.Results);
             }
-           // while (continuationToken != null);
-            while (allRecords.Count < 500000) ;
+            while (continuationToken != null);
             return allRecords;
         }
 
-        public static async Task<List<ResponseItem>> GetAlltableItemAsyncResponseItem(CloudTable table, string PartitionKey)
+        public static async Task<List<ResponseItem>> GetAlltableItemResponseAsync(CloudTable table, string PartitionKey)
         {
             TableQuery<ResponseItem> query = new TableQuery<ResponseItem>()
   .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
@@ -63,5 +62,35 @@ namespace IotBackEnd
             while (continuationToken != null);
             return allRecords;
         }
+
+
+
+        public static async Task<List<ResponseItem>> GetAlltableItemAsyncResponseItem(CloudTable table)
+        {
+            List<ResponseItem> responseItems = new List<ResponseItem>();
+            string PartitionKeyThisMonth = DateTime.Now.ToString("MMMM-yyyy");
+            string PartitionKeyLastMonth = DateTime.Now.AddMonths(-1).ToString("MMMM-yyyy");
+            responseItems = await GetItemByPartionkey(table, PartitionKeyThisMonth);
+            responseItems.AddRange(await GetItemByPartionkey(table, PartitionKeyLastMonth));
+            return responseItems;
+        }
+
+        private static async Task<List<ResponseItem>> GetItemByPartionkey(CloudTable table, string PartitionKey)
+        {
+            TableQuery<ResponseItem> query = new TableQuery<ResponseItem>()
+  .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, PartitionKey));
+            TableContinuationToken continuationToken = null;
+
+            List<ResponseItem> allRecords = new List<ResponseItem>();
+            do
+            {
+                var batch = await table.ExecuteQuerySegmentedAsync(query, continuationToken);
+                continuationToken = batch.ContinuationToken;
+                allRecords.AddRange(batch.Results);
+            }
+            while (continuationToken != null);
+            return allRecords;
+        }
+
     }
 }

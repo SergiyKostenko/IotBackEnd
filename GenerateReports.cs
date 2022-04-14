@@ -14,37 +14,42 @@ namespace IotBackEnd
     public static class GenerateReports
     {
         [FunctionName("GenerateReports")]
-        public static async Task RunAsync([TimerTrigger("0 0 10 * * *", RunOnStartup = true)] TimerInfo myTimer, ILogger log)
+        public static async Task RunAsync([TimerTrigger("0 0 10 * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             CloudTable table = StaticHelpers.GetTable("IotTable");
             List<MyTableEntity> allItems = await StaticHelpers.GetAlltableItemAsync(table, "raspberry01");
-        List<ResponseItem> result = ProcessItems(allItems);
+            List<ResponseItem> result = ProcessItems(allItems);
             await UpsertToTableAsync(result);
-            //clean up old
             await CleanUpOldItemsAsync(allItems);
         }
 
         private static async Task CleanUpOldItemsAsync(List<MyTableEntity> allItems)
         {
             CloudTable table = StaticHelpers.GetTable("IotTable");
-            string partionKey = "raspberry01";
-            foreach (var item in allItems)
+            int rowOffset = 0;
+            while (rowOffset < allItems.Count)
             {
-                TableOperation deleteOperation = TableOperation.Delete(item);
-                await table.ExecuteAsync(deleteOperation);
+                var batch = new TableBatchOperation();
+
+                // next batch
+                var rows = allItems
+                    .Skip(rowOffset)
+                    .Take(100)
+                    .ToList();
+
+                rows.ForEach(item => batch.Add(TableOperation.Delete(item)));
+
+                // submit
+                await table.ExecuteBatchAsync(batch);
+                rowOffset += rows.Count;
             }
         }
 
         private static async Task UpsertToTableAsync(List<ResponseItem> allItems)
         {
             CloudTable table = StaticHelpers.GetTable("IotTableHourly");
-            //    TableBatchOperation batchOperation = new TableBatchOperation();
-
-            //allItems.ForEach(i => batchOperation.Add(TableOperation.InsertOrReplace(i)));
-            //await table.ExecuteBatchAsync(batchOperation);
-
             foreach (var item in allItems)
             {
                 await table.ExecuteAsync(TableOperation.InsertOrReplace(item));

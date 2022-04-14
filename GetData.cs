@@ -26,7 +26,7 @@ namespace IotBackEnd
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
             CloudTable table = StaticHelpers.GetTable("IotTableHourly");
-            List<ResponseItem> allItems = await StaticHelpers.GetAlltableItemAsyncResponseItem(table, DateTime.Now.ToString("MMMM"));
+            List<ResponseItem> allItems = await StaticHelpers.GetAlltableItemAsyncResponseItem(table);
 
 
            var  filteredItems= 
@@ -40,10 +40,10 @@ namespace IotBackEnd
                 if (!String.IsNullOrWhiteSpace(top))
                 {
                     int topint = Int32.Parse(top);
-                    return new OkObjectResult(allItems.Take(topint));
+                    return new OkObjectResult(filteredItems.Take(topint));
                 }
                 else
-                    return new OkObjectResult(allItems);
+                    return new OkObjectResult(filteredItems);
             }
             else return new BadRequestResult();
         }

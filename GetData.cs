@@ -29,10 +29,18 @@ namespace IotBackEnd
             List<ResponseItem> allItems = await StaticHelpers.GetAlltableItemAsyncResponseItem(table);
 
 
-           var  filteredItems= 
-             allItems
-             .Where(i=> DateTime.ParseExact(i.RowKey, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) >= DateTime.Now.AddDays(-7))
-             .ToList();
+            int daysInt=7;
+            string days = req.Query["days"];
+            if (!String.IsNullOrWhiteSpace(days))
+            {
+                daysInt = Int32.Parse(days);
+                
+            }
+
+            var filteredItems =
+              allItems
+              .Where(i => DateTime.ParseExact(i.RowKey, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) >= DateTime.Now.AddDays(-daysInt))
+              .ToList();
 
             if (filteredItems.Count != 0)
             {

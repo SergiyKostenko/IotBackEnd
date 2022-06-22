@@ -22,9 +22,6 @@ namespace IotBackEnd
 
         public static CloudTable GetTable(string tableName)
         {
-            string connectionString = Environment.GetEnvironmentVariable("StorageConnection");
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            cloudTableClient = storageAccount.CreateCloudTableClient();
             CloudTable mytable = cloudTableClient.GetTableReference(tableName);
             return mytable;
         }
@@ -68,8 +65,13 @@ namespace IotBackEnd
         public static async Task<List<ResponseItem>> GetAlltableItemAsyncResponseItem(CloudTable table)
         {
             List<ResponseItem> responseItems = new List<ResponseItem>();
-            string PartitionKeyThisMonth = DateTime.Now.ToString("MMMM-yyyy");
-            string PartitionKeyLastMonth = DateTime.Now.AddMonths(-1).ToString("MMMM-yyyy");
+            //temp as raspberry is down
+            //string PartitionKeyThisMonth = DateTime.Now.ToString("MMMM-yyyy");
+            //string PartitionKeyLastMonth = DateTime.Now.AddMonths(-1).ToString("MMMM-yyyy");
+
+            string PartitionKeyThisMonth = "April-2022";
+            string PartitionKeyLastMonth = "March-2022";
+
             responseItems = await GetItemByPartionkey(table, PartitionKeyThisMonth);
             responseItems.AddRange(await GetItemByPartionkey(table, PartitionKeyLastMonth));
             return responseItems;

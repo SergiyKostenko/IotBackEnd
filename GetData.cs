@@ -33,7 +33,7 @@ namespace IotBackEnd
             string days = req.Query["days"];
             if (!String.IsNullOrWhiteSpace(days))
             {
-                daysInt = Int32.Parse(days);
+                daysInt = int.Parse(days);
                 
             }
 
